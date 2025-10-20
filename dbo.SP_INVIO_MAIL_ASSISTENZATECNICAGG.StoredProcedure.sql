@@ -1,0 +1,36 @@
+USE [unscproduzione]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_INVIO_MAIL_ASSISTENZATECNICAGG]    Script Date: 14/10/2025 12:36:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER PROCEDURE [dbo].[SP_INVIO_MAIL_ASSISTENZATECNICAGG]
+	@MAILDESTINATARIO VARCHAR(255), 
+	@COPIACARBONE VARCHAR(255),
+	@COPIACARBONEB VARCHAR(255),
+	@OGGETTO VARCHAR(200),
+	@MESSAGGIO VARCHAR(4000),
+	@ALLEGATI VARCHAR(4000),
+	@RITORNO INT = 0 Output
+	
+AS
+
+DECLARE @rc INT
+
+EXEC @RC = dbo.SSIS_sp_send_dbmail
+	@profile_name = 'ASSISTENZATECNICAGG',
+	@recipients = @MAILDESTINATARIO,
+	@subject			= @OGGETTO,
+	@copy_recipients = @COPIACARBONE,
+	@blind_copy_recipients = @COPIACARBONEB,
+	@body = @MESSAGGIO,
+	@body_format = 'HTML'
+
+SET @RITORNO = @rc
+
+RETURN @RITORNO
+
+GO
